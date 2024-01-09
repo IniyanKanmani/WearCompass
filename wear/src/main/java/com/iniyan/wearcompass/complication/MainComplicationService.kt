@@ -1,36 +1,51 @@
 package com.iniyan.wearcompass.complication
 
+import android.content.Intent
+import android.util.Log
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.data.PlainComplicationText
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
-import java.util.Calendar
 
 /**
  * Skeleton for complication data source that returns short text.
  */
 class MainComplicationService : SuspendingComplicationDataSourceService() {
 
+    companion object {
+        const val TAG = "WearCompass"
+        var currentSOTWValue = ""
+    }
+
+
+    override fun onCreate() {
+        Log.d(TAG, "onCreate")
+
+        val tapBuilder =
+
+        super.onCreate()
+
+    }
+
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "onStart")
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun getPreviewData(type: ComplicationType): ComplicationData? {
+        Log.d(TAG, "getPreviewData")
         if (type != ComplicationType.SHORT_TEXT) {
             return null
         }
-        return createComplicationData("Mon", "Monday")
+        return createComplicationData("Preview", "Preview Data")
     }
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData {
-        return when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-            Calendar.SUNDAY -> createComplicationData("Sun", "Sunday")
-            Calendar.MONDAY -> createComplicationData("Mon", "Monday")
-            Calendar.TUESDAY -> createComplicationData("Tue", "Tuesday")
-            Calendar.WEDNESDAY -> createComplicationData("Wed", "Wednesday")
-            Calendar.THURSDAY -> createComplicationData("Thu", "Thursday")
-            Calendar.FRIDAY -> createComplicationData("Fri!", "Friday!")
-            Calendar.SATURDAY -> createComplicationData("Sat", "Saturday")
-            else -> throw IllegalArgumentException("too many days")
-        }
+        Log.d(TAG, "Complication Data: $currentSOTWValue")
+        return createComplicationData(currentSOTWValue, "Compass Data")
     }
 
     private fun createComplicationData(text: String, contentDescription: String) =
@@ -38,4 +53,5 @@ class MainComplicationService : SuspendingComplicationDataSourceService() {
             text = PlainComplicationText.Builder(text).build(),
             contentDescription = PlainComplicationText.Builder(contentDescription).build()
         ).build()
+
 }
