@@ -14,14 +14,19 @@ class TransferCompassDataBroadcastReceiver : BroadcastReceiver() {
                 MainComplicationService.currentSOTWValue =
                     intent.getStringExtra("message").toString()
             } else {
-                MainComplicationService.currentSOTWValue =
-                    "tap"
+
+                Thread {
+                    // Perform network operations here
+                    val moonPhaseData: MoonPhaseData = MoonPhaseData()
+                    moonPhaseData.getMoonPhaseInfo()
+                    MainComplicationService.currentSOTWValue =
+                        moonPhaseData.moonPhaseInPercentage.toString()
+                }.start()
             }
 
             if (context != null) {
                 ComplicationDataSourceUpdateRequester.create(
-                    context,
-                    ComponentName(context, MainComplicationService::class.java)
+                    context, ComponentName(context, MainComplicationService::class.java)
                 ).requestUpdateAll()
             }
         }

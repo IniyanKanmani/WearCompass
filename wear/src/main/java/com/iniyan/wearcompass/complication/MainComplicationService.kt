@@ -52,6 +52,8 @@ class MainComplicationService : ComplicationDataSourceService() {
         )
     }
 
+
+
     private fun createOnTapPendingIntent(): PendingIntent? {
 //        val updateIntent = Intent("com.iniyan.wearcompass.action.UPDATE_COMPLICATION")
         val updateIntent = Intent("com.iniyan.wearcompass.MESSAGE_RECEIVED")

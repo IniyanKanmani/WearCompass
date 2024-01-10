@@ -28,6 +28,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.iniyan.wearcompass.Compass
 import com.iniyan.wearcompass.GetCompassDataForegroundService
+import com.iniyan.wearcompass.MoonPhaseData
 import com.iniyan.wearcompass.R
 import com.iniyan.wearcompass.SOTWFormatter
 import com.iniyan.wearcompass.presentation.theme.WearCompassTheme
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
 
         foregroundIntent = Intent(this, GetCompassDataForegroundService::class.java)
 
+
         setContent {
             WearApp("Android")
         }
@@ -64,6 +66,14 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         Log.d(TAG, "start compass")
         compass.start()
+//        Thread {
+//            // Perform network operations here
+//            val moonPhaseData: MoonPhaseData = MoonPhaseData()
+//            moonPhaseData.getMoonPhaseInfo()
+//            runOnUiThread {
+//                // Update UI with the result
+//            }
+//        }.start()
     }
 
     override fun onPause() {
