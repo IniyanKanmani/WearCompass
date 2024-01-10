@@ -4,22 +4,26 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.wear.watchface.complications.datasource.ComplicationDataSourceUpdateRequester
 import com.iniyan.wearcompass.complication.MainComplicationService
 
-class TransferCompassDataBroadcastReceiver: BroadcastReceiver() {
+class TransferCompassDataBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent != null) {
-            Log.d("MyReceiver", "Received message: ${intent.getStringExtra("message")}")
-            MainComplicationService.currentSOTWValue = intent.getStringExtra("message").toString()
+            if (intent.hasExtra("message")) {
+                MainComplicationService.currentSOTWValue =
+                    intent.getStringExtra("message").toString()
+            } else {
+                MainComplicationService.currentSOTWValue =
+                    "tap"
+            }
 
-            context?.let {
+            if (context != null) {
                 ComplicationDataSourceUpdateRequester.create(
-                    it,
+                    context,
                     ComponentName(context, MainComplicationService::class.java)
-                )
-            }?.requestUpdate()
+                ).requestUpdateAll()
+            }
         }
     }
 }

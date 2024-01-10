@@ -76,10 +76,6 @@ class GetCompassDataForegroundService : Service() {
         }
     }
 
-    private fun adjustSotwLabel(azimuth: Float) {
-        Log.d(TAG, "From Service :" + sotwFormatter.format(azimuth))
-    }
-
     override fun onDestroy() {
         stopForeground(true)
         stopSelf()

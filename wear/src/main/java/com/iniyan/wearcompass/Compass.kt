@@ -28,6 +28,7 @@ class Compass(context: Context) : SensorEventListener {
     private val R = FloatArray(9)
     private val I = FloatArray(9)
 
+    private var prevAzimuth: Float? = null
     private var azimuth = 0f
     private var azimuthFix = 0f
 
@@ -73,7 +74,11 @@ class Compass(context: Context) : SensorEventListener {
                 SensorManager.getOrientation(R, orientation)
                 azimuth =
                     (Math.toDegrees(orientation[0].toDouble()).toFloat() + azimuthFix + 360) % 360
-                listener?.onNewAzimuth(azimuth)
+
+                if (azimuth != prevAzimuth) {
+                    listener?.onNewAzimuth(azimuth)
+                    prevAzimuth = azimuth
+                }
             }
         }
     }
