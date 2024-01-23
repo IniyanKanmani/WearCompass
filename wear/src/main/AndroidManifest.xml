@@ -50,8 +50,19 @@
         </service>
 
         <service
-            android:name=".GetCompassDataForegroundService"
+            android:name=".CompassDataForegroundService"
             android:foregroundServiceType="dataSync" />
+
+        <receiver
+            android:name=".MainBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+                <action android:name="com.iniyan.wearcompass.START_COMPASS_DATA" />
+                <action android:name="com.iniyan.wearcompass.STOP_COMPASS_DATA" />
+            </intent-filter>
+        </receiver>
+
 
         <uses-library
             android:name="com.google.android.wearable"

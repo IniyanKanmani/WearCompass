@@ -6,6 +6,7 @@
 
 package com.iniyan.wearcompass.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,12 +27,18 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.iniyan.wearcompass.Compass
-import com.iniyan.wearcompass.GetCompassDataForegroundService
-import com.iniyan.wearcompass.MoonPhaseData
+import com.iniyan.wearcompass.DailyMoonPhaseWorker
+import com.iniyan.wearcompass.CompassDataForegroundService
 import com.iniyan.wearcompass.R
 import com.iniyan.wearcompass.SOTWFormatter
 import com.iniyan.wearcompass.presentation.theme.WearCompassTheme
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private companion object {
@@ -54,8 +61,9 @@ class MainActivity : ComponentActivity() {
         sotwFormatter = SOTWFormatter(this)
         setupCompass()
 
-        foregroundIntent = Intent(this, GetCompassDataForegroundService::class.java)
+        foregroundIntent = Intent(this, CompassDataForegroundService::class.java)
 
+        scheduleDailyWork(applicationContext)
 
         setContent {
             WearApp("Android")
@@ -79,19 +87,19 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         compass.stop()
-        this.startForegroundService(foregroundIntent)
+//        this.startForegroundService(foregroundIntent)
     }
 
     override fun onResume() {
         super.onResume()
-        this.stopService(foregroundIntent)
+//        this.stopService(foregroundIntent)
         compass.start()
     }
 
     override fun onStop() {
         Log.d(TAG, "stop compass")
         compass.stop()
-        this.startForegroundService(foregroundIntent)
+//        this.startForegroundService(foregroundIntent)
         super.onStop()
     }
 
@@ -107,6 +115,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun scheduleDailyWork(context: Context) {
+        val workRequest = PeriodicWorkRequestBuilder<DailyMoonPhaseWorker>(24, TimeUnit.HOURS)
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork("daily_moon_phase_data_update_task",
+            ExistingPeriodicWorkPolicy.KEEP, workRequest)
+
+    }
+
     private fun getCompassListener() = object : Compass.CompassListener {
         override fun onNewAzimuth(azimuth: Float) {
             runOnUiThread {
@@ -116,7 +134,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        this.startForegroundService(foregroundIntent)
+//        compass.stop()
+//        this.startForegroundService(foregroundIntent)
         super.onDestroy()
     }
 

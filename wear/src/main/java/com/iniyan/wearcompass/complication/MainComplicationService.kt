@@ -9,6 +9,7 @@ import androidx.wear.watchface.complications.data.PlainComplicationText
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationDataSourceService
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
+import com.iniyan.wearcompass.CompassDataForegroundService
 
 /**
  * Skeleton for complication data source that returns short text.
@@ -17,7 +18,9 @@ class MainComplicationService : ComplicationDataSourceService() {
 
     companion object {
         const val TAG = "WearCompass"
-        var currentSOTWValue = ""
+//        var currentSOTWValue = "SOTW"
+        var todayMoonPhaseValue = "Moon"
+        var complicationDataToDisplay = ""
     }
 
     override fun onCreate() {
@@ -28,6 +31,7 @@ class MainComplicationService : ComplicationDataSourceService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStart")
+        complicationDataToDisplay = todayMoonPhaseValue
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -43,10 +47,10 @@ class MainComplicationService : ComplicationDataSourceService() {
     override fun onComplicationRequest(
         request: ComplicationRequest, listener: ComplicationRequestListener
     ) {
-        Log.d(TAG, "Complication Data: $currentSOTWValue")
+        Log.d(TAG, "Complication Data: $complicationDataToDisplay")
         listener.onComplicationData(
             createComplicationData(
-                currentSOTWValue,
+                complicationDataToDisplay,
                 "Compass Data"
             ).setTapAction(createOnTapPendingIntent()).build()
         )
@@ -54,10 +58,13 @@ class MainComplicationService : ComplicationDataSourceService() {
 
 
 
-    private fun createOnTapPendingIntent(): PendingIntent? {
 //        val updateIntent = Intent("com.iniyan.wearcompass.action.UPDATE_COMPLICATION")
-        val updateIntent = Intent("com.iniyan.wearcompass.MESSAGE_RECEIVED")
-        return PendingIntent.getBroadcast(this, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//        val updateIntent = Intent("com.iniyan.wearcompass.START_COMPASS_DATA")
+//        val updateIntent = Intent("android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST")
+    private fun createOnTapPendingIntent(): PendingIntent? {
+        val updateIntent = Intent(this, CompassDataForegroundService::class.java)
+        return PendingIntent.getForegroundService(this, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//        return PendingIntent.getBroadcast(this, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     private fun createComplicationData(text: String, contentDescription: String) =

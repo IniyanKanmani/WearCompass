@@ -59,6 +59,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.wear.tiles:tiles:1.2.0")
     implementation("androidx.wear.tiles:tiles-material:1.2.0")
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
     implementation("com.google.android.horologist:horologist-compose-tools:0.4.8")
     implementation("com.google.android.horologist:horologist-tiles:0.4.8")
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:1.2.0")

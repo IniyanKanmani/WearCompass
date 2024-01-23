@@ -1,18 +1,22 @@
 package com.iniyan.wearcompass
 
-import android.util.Log
+import android.content.Context
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
+import com.iniyan.wearcompass.complication.MainComplicationService
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import kotlin.math.roundToInt
 
-class MoonPhaseData {
+class DailyMoonPhaseWorker(context: Context, workerParams: WorkerParameters) : Worker(context,
+    workerParams
+) {
 
-    var moonPhaseInPercentage: Int? = null
+    private var moonPhaseInPercentage: Int? = null
 
-    fun getMoonPhaseInfo() {
-
+    override fun doWork(): Result {
         val client = OkHttpClient()
 
         val request = Request.Builder()
@@ -32,8 +36,10 @@ class MoonPhaseData {
 
                 val moonPhase = json.obj("moon")?.double("phase")
                 moonPhaseInPercentage = (moonPhase?.times(100))?.roundToInt()
+                MainComplicationService.todayMoonPhaseValue = moonPhaseInPercentage.toString()
             }
 
         }
+        return Result.success()
     }
 }
